@@ -1,5 +1,7 @@
 package com.github.dimsuz.playground.routing
 
-fun main() {
-  println("starting")
+import com.github.dimsuz.playground.routing.springdemo.mainSpring
+
+fun main(args: Array<String>) {
+  mainSpring(args)
 }
