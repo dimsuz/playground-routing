@@ -23,7 +23,6 @@ class StateMachineConfig : StateMachineConfigurerAdapter<Route, Event>() {
   override fun configure(config: StateMachineConfigurationConfigurer<Route, Event>) {
     config
       .withConfiguration()
-      .autoStartup(true)
       .listener(listener())
   }
 
@@ -31,8 +30,40 @@ class StateMachineConfig : StateMachineConfigurerAdapter<Route, Event>() {
   override fun configure(states: StateMachineStateConfigurer<Route, Event>) {
     states
       .withStates()
+      .initial(Route.FlowLogin)
+      .state(Route.FlowLogin)
+      .and()
+      .withStates()
+      .parent(Route.FlowLogin)
       .initial(Route.Login)
-      .states(EnumSet.allOf(Route::class.java))
+      .state(Route.Login)
+      .and()
+
+      .withStates()
+      .state(Route.FlowOtp)
+      .and()
+      .withStates()
+      .parent(Route.FlowOtp)
+      .initial(Route.OtpIntro)
+      .states(EnumSet.of(Route.OtpIntro, Route.OtpInput))
+      .and()
+
+      .withStates()
+      .state(Route.FlowPinCreate)
+      .and()
+      .withStates()
+      .parent(Route.FlowPinCreate)
+      .initial(Route.PinIntro)
+      .states(EnumSet.of(Route.PinIntro, Route.PinCreate))
+      .and()
+
+      .withStates()
+      .state(Route.FlowMain)
+      .and()
+      .withStates()
+      .parent(Route.FlowMain)
+      .initial(Route.Main)
+      .state(Route.Main)
   }
 
   @Throws(Exception::class)
@@ -100,18 +131,33 @@ class StateMachineConfig : StateMachineConfigurerAdapter<Route, Event>() {
       }
 
       override fun transitionStarted(transition: Transition<Route, Event>?) {
-        println("Transition started. Trigger: ${transition?.trigger?.event?.javaClass?.simpleName}")
+        if (transition?.source?.isSubmachineState == true || transition?.target?.isSubmachineState == true) {
+          println(
+            "Transition started: ${transition.source?.id} => ${transition.target?.id}" +
+              ", trigger: ${transition.trigger?.event?.javaClass?.simpleName}"
+          )
+        } else {
+          println(
+            "  Transition started: ${transition?.source?.id} => ${transition?.target?.id}" +
+              ", trigger: ${transition?.trigger?.event?.javaClass?.simpleName}"
+          )
+        }
+      }
+
+      override fun transitionEnded(transition: Transition<Route, Event>?) {
+        if (transition?.source?.isSubmachineState == true || transition?.target?.isSubmachineState == true) {
+          println("Transition ended: ${transition.source?.id} => ${transition.target?.id}")
+        } else {
+          println("  Transition ended: ${transition?.source?.id} => ${transition?.target?.id}")
+        }
       }
 
       override fun stateChanged(from: State<Route, Event>?, to: State<Route, Event>?) {
-        println(
-          """
-          State change:
-            from ${from?.id}
-            to ${to?.id}
-          
-          """.trimIndent()
-        )
+        if (from?.isSubmachineState == true || to?.isSubmachineState == true) {
+          println("State change: ${from?.id} => ${to?.id}")
+        } else {
+          println("  Sub-State change: ${from?.id} => ${to?.id}")
+        }
       }
     }
   }

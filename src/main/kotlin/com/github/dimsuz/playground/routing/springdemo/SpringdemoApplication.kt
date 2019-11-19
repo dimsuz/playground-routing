@@ -12,17 +12,18 @@ class SpringdemoApplication : CommandLineRunner {
   private lateinit var stateMachine: StateMachine<Route, Event>
 
   override fun run(vararg args: String?) {
-    stateMachine.sendEvent(Event.LoginSuccessOtpRequired)
-    stateMachine.sendEvent(Event.BackPressed)
-    stateMachine.sendEvent(Event.LoginSuccessOtpNotRequired)
-    stateMachine.sendEvent(Event.BackPressed)
-
-    stateMachine.sendEvent(Event.LoginSuccessOtpRequired)
-    stateMachine.sendEvent(Event.OtpIntroContinueRequest)
-    stateMachine.sendEvent(Event.OtpInputSuccessful)
-    stateMachine.sendEvent(Event.PinIntroContinueRequest)
-    stateMachine.sendEvent(Event.PinCreateSuccess)
-    stateMachine.sendEvent(Event.BackPressed)
+    stateMachine.start()
+//    stateMachine.sendEvent(Event.LoginSuccessOtpRequired)
+//    stateMachine.sendEvent(Event.BackPressed)
+//    stateMachine.sendEvent(Event.LoginSuccessOtpNotRequired)
+//    stateMachine.sendEvent(Event.BackPressed)
+//
+//    stateMachine.sendEvent(Event.LoginSuccessOtpRequired)
+//    stateMachine.sendEvent(Event.OtpIntroContinueRequest)
+//    stateMachine.sendEvent(Event.OtpInputSuccessful)
+//    stateMachine.sendEvent(Event.PinIntroContinueRequest)
+//    stateMachine.sendEvent(Event.PinCreateSuccess)
+//    stateMachine.sendEvent(Event.BackPressed)
   }
 }
 
@@ -35,6 +36,12 @@ enum class Flow {
 }
 
 enum class Route {
+  FlowLogin,
+  FlowOtp,
+  FlowPinCreate,
+  FlowPinValidate,
+  FlowMain,
+
   Login,
   PinIntro,
   PinCreate,
